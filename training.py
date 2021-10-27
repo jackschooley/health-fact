@@ -1,9 +1,8 @@
-import datasets
 import torch
 from transformers import DistilBertModel, DistilBertTokenizer
 
 from model import Classifier
-from preprocessing import tokenize
+from preprocessing import preprocess
 
 def train(model, optimizer, input_ids, attention_mask, labels, epochs, batch_size,
           use_gpu = True):
@@ -36,23 +35,19 @@ def train(model, optimizer, input_ids, attention_mask, labels, epochs, batch_siz
             if batch_start % 100 == 0:
                 print("Batch starting with observation", batch_start, "loss is", loss.item())
 
+    torch.save(model, "model.pth")
+    torch.save(model.state_dict(), "model_weights.pth")
+    
 if __name__ == "__main__":
-    dataset = datasets.load_dataset("health_fact")
-    train_data = dataset["train"]
-    
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-    db_model = DistilBertModel.from_pretrained("distilbert-base-uncased")
-    
-    input_ids, attention_mask = tokenize(tokenizer, train_data)
-    labels = torch.tensor(train_data["label"])
+    input_ids, attention_mask, labels = preprocess(tokenizer)
     
     learning_rate = 0.0001
     batch_size = 2
     epochs = 1
     
+    db_model = DistilBertModel.from_pretrained("distilbert-base-uncased")
     model = Classifier(db_model)
     optimizer = torch.optim.SGD(model.parameters(), learning_rate)
 
     train(model, optimizer, input_ids, attention_mask, labels, epochs, batch_size)
-    torch.save(model, "model.pth")
-    torch.save(model.state_dict(), "model_weights.pth")
