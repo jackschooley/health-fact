@@ -18,7 +18,7 @@ def train(model, optimizer, input_ids, attention_mask, labels, epochs, batch_siz
         print("Epoch", epoch)
         batch_start = 0
         
-        while batch_start <= input_ids.size(0):
+        while batch_start < input_ids.size(0):
             batch_end = batch_start + batch_size
             batch_inputs = input_ids[batch_start:batch_end, :]
             batch_attentions = attention_mask[batch_start:batch_end, :]
@@ -31,10 +31,11 @@ def train(model, optimizer, input_ids, attention_mask, labels, epochs, batch_siz
             loss.backward()
             optimizer.step()
             
-            batch_start = batch_end
             if batch_start % 100 == 0:
                 print("Batch starting with observation", batch_start, "loss is", loss.item())
+            batch_start = batch_end
 
+    #not uploaded to github because they are quite large
     torch.save(model, "model.pth")
     torch.save(model.state_dict(), "model_weights.pth")
     
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     
     learning_rate = 0.0001
     batch_size = 2
-    epochs = 1
+    epochs = 2
     
     db_model = DistilBertModel.from_pretrained("distilbert-base-uncased")
     model = Classifier(db_model)

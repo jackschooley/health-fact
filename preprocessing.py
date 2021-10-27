@@ -15,7 +15,7 @@ def fetch_data(data_split = "train"):
     return data
 
 def remove_bad_observations(data):
-    good_indices = numpy.asarray(data["label"] != -1).nonzero()[0] #returns a tuple
+    good_indices = numpy.asarray(data["label"] != -1).nonzero()[0] #access tuple element
     cleaned_data = data.iloc[good_indices]
     cleaned_data.reset_index(inplace = True) #needed to avoid torch compatibility issues
     

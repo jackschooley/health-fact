@@ -14,7 +14,7 @@ class Classifier(nn.Module):
     def forward(self, input_ids, attention_mask, labels = None):
         db_outputs = self.distilbert(input_ids, attention_mask)
         hidden_states = db_outputs.last_hidden_state
-        cls_hidden_states = hidden_states[:, 0, :]
+        cls_hidden_states = hidden_states[:, 0, :] #take the [CLS] token only
         logits = self.linear(cls_hidden_states)
         
         loss = None
