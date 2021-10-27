@@ -45,7 +45,7 @@ def get_metrics(labels, predicted_labels):
 
 if __name__ == "__main__":
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-    input_ids, attention_mask, labels = preprocess(tokenizer, "train")
+    input_ids, attention_mask, labels = preprocess(tokenizer, "validation")
     
     batch_size = 2
     
