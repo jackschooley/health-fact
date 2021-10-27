@@ -29,16 +29,8 @@ locally for small projects.
 
 ## Results
 
-First I trained the model for one epoch. This led to a validation set accuracy of 0.6523887973640856. The confusion matrix that I obtained is listed below.
-
-|   | 0    | 1 | 2    | 3 |
-|---|------|---|------|---|
-| 0 | 2422 | 0 | 559  | 0 |
-| 1 | 1155 | 0 | 279  | 0 |
-| 2 | 1335 | 0 | 3743 | 0 |
-| 3 | 204  | 0 | 87   | 0 |
-
-And here is a legend to say what the numbered outcomes mean.
+First I trained the model for one epoch. This led to a validation set accuracy of 0.652. What was most interesting about these results, though, was that the model only
+predicted 0 or 2 and never 1 or 3. For reference, here are the corresponding labels for each class number.
 
 | Number | Meaning |
 |--------|---------|
@@ -49,6 +41,37 @@ And here is a legend to say what the numbered outcomes mean.
 
 So the model had a pretty tough time learning to classify things as "mixture" or "unproven". That would make a bit of sense because these categories are very much less clear-cut
 than "true" or "false". I wondered if this was evidence for overfitting or underfitting, and so I decided to run an evaluation on the training set to further assess this. It
-turned out that the training set accuracy was actually only 0.6308649530803754, which was lower than the validation set accuracy. I won't list the confusion matrix again, but it
-had the same pattern of only predicting 0 and 2. My hypothesis for underfitting was a bit stronger now, so I decided to train the model for another epoch to see if this was 
-indeed the case.
+turned out that the training set accuracy was actually only 0.631, which was lower than the validation set accuracy. The model predicted only 0 and 2 on the training set as 
+well, which adds to the evidence in favor of underfitting, so I decided to train the model for another epoch to test this hypothesis.
+
+|   | 0    | 1  | 2    | 3 |
+|---|------|----|------|---|
+| 0 | 299  | 7  | 74   | 0 |
+| 1 | 115  | 11 | 38   | 0 |
+| 2 | 103  | 11 | 515  | 0 |
+| 3 | 31   | 1  | 9    | 0 |
+
+Here is the confusion matrix for the validation set. Training the model for a second epoch did lead to an improvement in accuracy to 0.680. Training accuracy also increased to 
+0.676, and the model is starting to predict 1s for that split as well. This is evidence that the model is continuing to learn with more training data and has not yet run into 
+overfitting issues. Finally, after this improvement I used the test set for a final evaluation.
+
+|   | 0    | 1  | 2    | 3 |
+|---|------|----|------|---|
+| 0 | 309  | 5  | 74   | 0 |
+| 1 | 128  | 12 | 61   | 0 |
+| 2 | 120  | 14 | 465  | 0 |
+| 3 | 32   | 0  | 13   | 0 |
+
+Here is the confusion matrix for the test set. Unfortunately, the accuracy on the test set is 0.637, which is lower than on the validation set, but it's in the same ballpark 
+overall.
+
+## Conclusion
+
+Overall, this straightforward modeling approach and architecture was able to get an accuracy of approximately 2/3 in a 4-class classification problem using only the claim and 
+explanation natural language features. Greater performance could probably be attained using this same architecture only by training for even more epochs.
+
+Other improvements could be to incorporate more of the data or improve on the model architecture. The first place I would probably go to yield more data would probably be the
+subjects, as these would be short and sweet language features that might still yield some interesting insights. Perhaps certain subjects are more prone to belonging to one
+class. As far as architecture improvements, more linear layers would be an obvious thing to try, as the classification head is the part of the model that is not pretrained and
+thus could use more finetuning and complexity. Finally, a more sophisticated pooling layer could be taken for each sequence of the DistilBERT last hidden states, instead of just 
+taking the [CLS] token.
